@@ -98,11 +98,13 @@ module Fastlane
 
         format_pattern = lane_context[SharedValues::CONVENTIONAL_CHANGELOG_ACTION_FORMAT_PATTERN]
         splitted.each do |line|
+          parts = line.split("|")
+          subject = parts[0].strip
           # conventional commits are in format
           # type: subject (fix: app crash - for example)
           commit = Helper::SemanticReleaseHelper.parse_commit(
-            commit_subject: line.split("|")[0],
-            commit_body: line.split("|")[1],
+            commit_subject: subject,
+            commit_body: parts[1],
             releases: releases,
             pattern: format_pattern
           )
@@ -139,7 +141,7 @@ module Fastlane
           end
 
           next_version = "#{next_major}.#{next_minor}.#{next_patch}"
-          UI.message("#{next_version}: #{line}")
+          UI.message("#{next_version}: #{subject}") if params[:show_version_path]
         end
 
         next_version = "#{next_major}.#{next_minor}.#{next_patch}"
@@ -307,7 +309,14 @@ module Fastlane
           FastlaneCore::ConfigItem.new(
             key: :single_step,
             description: "Only update the new version by the minimal amount",
+            type: Boolean,
             default_value: false,
+            optional: true
+          ),
+          FastlaneCore::ConfigItem.new(
+            key: :show_version_path,
+            description: "True if you want to print out the version calculated for each commit",
+            default_value: true,
             type: Boolean,
             optional: true
           ),

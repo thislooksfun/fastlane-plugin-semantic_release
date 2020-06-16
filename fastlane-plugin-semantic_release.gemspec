@@ -1,6 +1,7 @@
 # coding: utf-8
 
 lib = File.expand_path("./lib", __FILE__)
+puts lib
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fastlane/plugin/semantic_release/version'
 
